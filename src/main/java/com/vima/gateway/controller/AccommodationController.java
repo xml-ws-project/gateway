@@ -1,0 +1,97 @@
+package com.vima.gateway.controller;
+
+import com.vima.gateway.AccommodationRequest;
+import com.vima.gateway.AdditionalBenefit;
+import com.vima.gateway.AdditionalBenefitRequest;
+import com.vima.gateway.Empty;
+import com.vima.gateway.AccommodationList;
+import com.vima.gateway.AccommodationResponse;
+import com.vima.gateway.AccommodationServiceGrpc;
+import com.vima.gateway.SpecialInfoRequest;
+import com.vima.gateway.SpecialInfoResponse;
+import com.vima.gateway.UpdateAccommodationRequest;
+import com.vima.gateway.Uuid;
+import com.vima.gateway.converter.LocalDateConverter;
+import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
+import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
+import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
+import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpRequest;
+import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpResponse;
+import com.vima.gateway.dto.specialInfo.SpecialInfoHttpRequest;
+import com.vima.gateway.dto.specialInfo.SpecialInfoHttpResponse;
+import com.vima.gateway.mapper.AccommodationMapper;
+import com.vima.gateway.mapper.AdditionalBenefitMapper;
+import com.vima.gateway.mapper.SpecialInfoMapper;
+
+import java.util.List;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/accommodation")
+@RequiredArgsConstructor
+public class AccommodationController {
+
+	@PostMapping(value = "/")
+	public ResponseEntity<AccommodationHttpResponse> create(@RequestBody final AccommodationHttpRequest request) {
+		AccommodationResponse response = getBlockingStub().create(AccommodationMapper.convertHttpToGrpc(request));
+		return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttp(response));
+	}
+
+	@PatchMapping("/")
+	public ResponseEntity<?> update(final @RequestBody UpdateAccommodationHttpRequest request) {
+		var response = getBlockingStub().update(AccommodationMapper.convertHttpToGrpcUpdate(request));
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<AccommodationHttpResponse> findById(@PathVariable("id") final String id) {
+		var response = getBlockingStub().findById(Uuid.newBuilder().setValue(id).build());
+		return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttp(response));
+	}
+
+
+	@GetMapping("/all/{id}")
+	public ResponseEntity<List<AccommodationHttpResponse>> findAllByHostId(@PathVariable("id") final String id) {
+		var response = getBlockingStub().findAllByHostId(Uuid.newBuilder().setValue(id).build());
+		return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(response));
+	}
+
+	@PostMapping("/benefit")
+	public ResponseEntity<AdditionalBenefitHttpResponse> addBenefit(@RequestBody final AdditionalBenefitHttpRequest benefit) {
+		var response = getBlockingStub().addBenefit(AdditionalBenefitMapper.convertHttpToGrpc(benefit));
+		return ResponseEntity.ok(AdditionalBenefitMapper.convertGrpcToHttp(response));
+	}
+
+	@PostMapping("/special-period")
+	public ResponseEntity<SpecialInfoHttpResponse> createSpecialPeriod(@RequestBody final SpecialInfoHttpRequest request) {
+		var response = getBlockingStub().createSpecialPeriod(SpecialInfoMapper.convertHttpToGrpc(request));
+		return ResponseEntity.ok(SpecialInfoMapper.convertGrpcToHttp(response));
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<AccommodationHttpResponse>> findAll() {
+		Empty empty = Empty.newBuilder().build();
+		AccommodationList response = getBlockingStub().findAll(empty);
+		return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(response));
+	}
+
+	private AccommodationServiceGrpc.AccommodationServiceBlockingStub getBlockingStub() {
+		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+			.usePlaintext()
+			.build();
+		return AccommodationServiceGrpc.newBlockingStub(channel);
+	}
+}

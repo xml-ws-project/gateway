@@ -1,0 +1,84 @@
+package com.vima.gateway.mapper;
+
+import com.google.protobuf.Timestamp;
+import com.vima.gateway.AccommodationList;
+import com.vima.gateway.AccommodationRequest;
+import com.vima.gateway.AccommodationResponse;
+import com.vima.gateway.UpdateAccommodationRequest;
+import com.vima.gateway.converter.LocalDateConverter;
+import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
+import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
+import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
+import com.vima.gateway.enums.PaymentType;
+import com.vima.gateway.DataRange;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class AccommodationMapper {
+
+	public static AccommodationHttpResponse convertGrpcToHttp(AccommodationResponse grpcResponse) {
+		return AccommodationHttpResponse.builder()
+			.id(grpcResponse.getId())
+			.name(grpcResponse.getName())
+			.hostId(grpcResponse.getHostId())
+			.country(grpcResponse.getCountry())
+			.city(grpcResponse.getCity())
+			.street(grpcResponse.getStreet())
+			.number(grpcResponse.getNumber())
+			.postalCode(grpcResponse.getPostalCode())
+			.benefits(AdditionalBenefitMapper.convertGrpcToHttpList(grpcResponse.getBenefitsList()))
+			.images(grpcResponse.getImagesList())
+			.maxGuests(grpcResponse.getMaxGuests())
+			.minGuests(grpcResponse.getMinGuests())
+			.regularPrice(grpcResponse.getRegularPrice())
+			.paymentType(PaymentType.valueOf(grpcResponse.getPaymentType().toString()))
+			.build();
+	}
+
+	public static UpdateAccommodationRequest convertHttpToGrpcUpdate(UpdateAccommodationHttpRequest httpRequest) {
+		com.vima.gateway.DataRange dateRange = DataRange.newBuilder()
+			.setStart(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getStart()))
+			.setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getEnd()))
+			.build();
+
+		return UpdateAccommodationRequest.newBuilder()
+			.setAccommodationId(httpRequest.getAccommodationId())
+			.setPeriod(dateRange)
+			.setPrice(httpRequest.getPrice())
+			.build();
+	}
+
+	public static AccommodationRequest convertHttpToGrpc(AccommodationHttpRequest httpRequest) {
+		com.vima.gateway.DataRange dateRange = DataRange.newBuilder()
+			.setStart(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getStart()))
+			.setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getEnd()))
+			.build();
+
+		return AccommodationRequest.newBuilder()
+			.setName(httpRequest.getName())
+			.setHostId(httpRequest.getHostId())
+			.setCountry(httpRequest.getCountry())
+			.setCity(httpRequest.getCity())
+			.setStreet(httpRequest.getStreet())
+			.setNumber(httpRequest.getNumber())
+			.setPostalCode(httpRequest.getPostalCode())
+			.addAllImages(httpRequest.getImages())
+			.setMinGuests(httpRequest.getMinGuests())
+			.setMaxGuests(httpRequest.getMaxGuests())
+			.setPaymentType(com.vima.gateway.PaymentType.valueOf(httpRequest.getPaymentType().toString()))
+			.setAutomaticAcceptance(httpRequest.isAutomaticAcceptance())
+			.setRegularPrice(httpRequest.getRegularPrice())
+			.addAllBenefitsIds(httpRequest.getBenefitsIds())
+			.setAvailablePeriod(dateRange)
+			.build();
+	}
+
+	public static List<AccommodationHttpResponse> convertGrpcToHttpList(AccommodationList grpcResponseList) {
+		List<AccommodationHttpResponse> httpResponseList = new ArrayList<>();
+		grpcResponseList.getResponseList().forEach(response -> {
+			httpResponseList.add(convertGrpcToHttp(response));
+		});
+		return httpResponseList;
+	}
+}
