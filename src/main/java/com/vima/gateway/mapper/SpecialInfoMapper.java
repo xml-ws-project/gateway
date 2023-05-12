@@ -1,6 +1,6 @@
 package com.vima.gateway.mapper;
 
-import com.vima.gateway.DataRange;
+import com.vima.gateway.DateRange;
 import com.vima.gateway.SpecialInfoRequest;
 import com.vima.gateway.SpecialInfoResponse;
 import com.vima.gateway.converter.LocalDateConverter;
@@ -22,7 +22,7 @@ public class SpecialInfoMapper {
 	}
 
 	public static SpecialInfoRequest convertHttpToGrpc(SpecialInfoHttpRequest httpRequest) {
-		com.vima.gateway.DataRange dateRange = DataRange.newBuilder()
+		com.vima.gateway.DateRange dateRange = DateRange.newBuilder()
 			.setStart(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getSpecialPeriodStart()))
 			.setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getSpecialPeriodEnd()))
 			.build();
