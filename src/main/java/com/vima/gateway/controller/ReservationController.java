@@ -46,7 +46,7 @@ public class ReservationController {
 
     @PutMapping("/respond/{id}")
     public ResponseEntity<TextMessage> reservationResponse(@PathVariable("id") final String id){
-        var response = getBlockingStub().getStub().reservationResponse(Uuid.newBuilder().setValue(id).build());
+        var response = getBlockingStub().getStub().hostResponse(Uuid.newBuilder().setValue(id).build());
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(response);
     }
