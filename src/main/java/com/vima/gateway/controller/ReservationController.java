@@ -1,10 +1,12 @@
 package com.vima.gateway.controller;
 
 import com.google.protobuf.BoolValue;
+import com.vima.gateway.Empty;
 import com.vima.gateway.ReservationServiceGrpc;
 import com.vima.gateway.TextMessage;
 import com.vima.gateway.Uuid;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
+import com.vima.gateway.dto.reservation.HostHttpResponse;
 import com.vima.gateway.dto.reservation.ReservationHttpRequest;
 import com.vima.gateway.dto.reservation.ReservationHttpResponse;
 import com.vima.gateway.mapper.reservation.ReservationMapper;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +40,13 @@ public class ReservationController {
         return ResponseEntity.ok(ReservationMapper.convertGrpcToHttp(response));
     }
 
+    @GetMapping("/")
+    public ResponseEntity<List<ReservationHttpResponse>> findAll(){
+        var response = getBlockingStub().getStub().findAll(Empty.newBuilder().build());
+        getBlockingStub().getChannel().shutdown();
+        return  ResponseEntity.ok(ReservationMapper.convertGrpcToHttpList(response));
+    }
+
     @PutMapping("/cancel/{id}")
     public ResponseEntity<String> cancelReservation(@PathVariable("id") final String id){
         var response = getBlockingStub().getStub().cancelReservation(Uuid.newBuilder().setValue(id).build());
@@ -44,11 +54,11 @@ public class ReservationController {
         return ResponseEntity.ok(response.getValue());
     }
 
-    @PutMapping("/respond/{id}")
-    public ResponseEntity<TextMessage> reservationResponse(@PathVariable("id") final String id){
-        var response = getBlockingStub().getStub().hostResponse(Uuid.newBuilder().setValue(id).build());
+    @PutMapping("/host-response")
+    public ResponseEntity<String> reservationResponse(@RequestBody @Valid final HostHttpResponse response){
+        var result = getBlockingStub().getStub().hostResponse(ReservationMapper.convertHostResponseToGrpc(response));
         getBlockingStub().getChannel().shutdown();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(result.getValue());
     }
 
     private gRPCObjectRes getBlockingStub() {

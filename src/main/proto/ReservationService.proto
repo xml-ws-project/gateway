@@ -38,7 +38,12 @@ message ReservationResponse{
 }
 
 message ReservationList{
-  repeated ReservationResponse retList = 1;
+  repeated ReservationResponse returnList = 1;
+}
+
+message HostResponse{
+  string id = 1;
+  bool accept = 2;
 }
 
 service ReservationService{
@@ -46,5 +51,5 @@ service ReservationService{
   rpc findAll(Empty) returns (ReservationList);
   rpc findById(Uuid) returns (ReservationResponse);
   rpc cancelReservation(Uuid) returns(TextMessage);
-  rpc hostResponse(Uuid) returns(TextMessage);
+  rpc hostResponse(HostResponse) returns(TextMessage);
 }
