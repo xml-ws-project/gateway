@@ -4,7 +4,9 @@ import com.vima.gateway.Empty;
 import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationResponse;
 import com.vima.gateway.AccommodationServiceGrpc;
+import com.vima.gateway.SearchList;
 import com.vima.gateway.Uuid;
+import com.vima.gateway.dto.SearchHttpResponse;
 import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
 import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
 import com.vima.gateway.dto.accommodation.SearchHttpRequest;
@@ -92,10 +94,10 @@ public class AccommodationController {
 	}
 
 	@PostMapping("/search")
-	public ResponseEntity<List<AccommodationHttpResponse>> search(@RequestBody @Valid final SearchHttpRequest searchRequest) {
-		AccommodationList response = getBlockingStub().getStub().searchAccommodation(AccommodationMapper.convertSearchRequest(searchRequest));
+	public ResponseEntity<List<SearchHttpResponse>> search(@RequestBody @Valid final SearchHttpRequest searchRequest) {
+		SearchList response = getBlockingStub().getStub().searchAccommodation(AccommodationMapper.convertSearchRequest(searchRequest));
 		getBlockingStub().getChannel().shutdown();
-		return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(response));
+		return ResponseEntity.ok(AccommodationMapper.convertToSearchList(response));
 	}
 
 	private gRPCObjectAccom getBlockingStub() {
