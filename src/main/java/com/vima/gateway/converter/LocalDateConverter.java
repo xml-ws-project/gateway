@@ -15,4 +15,11 @@ public class LocalDateConverter {
 			.setNanos(instant.getNano())
 			.build();
 	}
+
+	public static LocalDate convertGoogleTimeStampToLocalDate(Timestamp timestamp) {
+		return Instant
+				.ofEpochSecond(timestamp.getSeconds() , timestamp.getNanos())
+				.atZone(ZoneOffset.UTC)
+				.toLocalDate();
+	}
 }

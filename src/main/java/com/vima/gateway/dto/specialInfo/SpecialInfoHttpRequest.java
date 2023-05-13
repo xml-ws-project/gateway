@@ -1,6 +1,6 @@
 package com.vima.gateway.dto.specialInfo;
 
-import com.vima.gateway.enums.PeriodType;
+import com.vima.gateway.enums.accommodation.PeriodType;
 
 import java.time.LocalDate;
 

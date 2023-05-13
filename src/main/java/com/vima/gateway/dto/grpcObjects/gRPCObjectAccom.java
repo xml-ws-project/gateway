@@ -1,4 +1,4 @@
-package com.vima.gateway.dto;
+package com.vima.gateway.dto.grpcObjects;
 
 import com.vima.gateway.AccommodationServiceGrpc;
 
@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class gRPCObject {
+public class gRPCObjectAccom {
 
 	ManagedChannel channel;
 	AccommodationServiceGrpc.AccommodationServiceBlockingStub stub;

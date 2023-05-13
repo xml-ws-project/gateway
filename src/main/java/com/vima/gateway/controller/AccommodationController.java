@@ -1,19 +1,11 @@
 package com.vima.gateway.controller;
 
-import com.vima.gateway.AccommodationRequest;
-import com.vima.gateway.AdditionalBenefit;
-import com.vima.gateway.AdditionalBenefitRequest;
 import com.vima.gateway.Empty;
 import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationResponse;
 import com.vima.gateway.AccommodationServiceGrpc;
 import com.vima.gateway.SearchList;
-import com.vima.gateway.SearchRequest;
-import com.vima.gateway.SpecialInfoRequest;
-import com.vima.gateway.SpecialInfoResponse;
-import com.vima.gateway.UpdateAccommodationRequest;
 import com.vima.gateway.Uuid;
-import com.vima.gateway.converter.LocalDateConverter;
 import com.vima.gateway.dto.SearchHttpResponse;
 import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
 import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
@@ -21,18 +13,17 @@ import com.vima.gateway.dto.accommodation.SearchHttpRequest;
 import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
 import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpRequest;
 import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpResponse;
-import com.vima.gateway.dto.gRPCObject;
+import com.vima.gateway.dto.grpcObjects.gRPCObjectAccom;
 import com.vima.gateway.dto.specialInfo.SpecialInfoHttpRequest;
 import com.vima.gateway.dto.specialInfo.SpecialInfoHttpResponse;
-import com.vima.gateway.mapper.AccommodationMapper;
-import com.vima.gateway.mapper.AdditionalBenefitMapper;
-import com.vima.gateway.mapper.SpecialInfoMapper;
+import com.vima.gateway.mapper.accommodation.AccommodationMapper;
+import com.vima.gateway.mapper.accommodation.AdditionalBenefitMapper;
+import com.vima.gateway.mapper.accommodation.SpecialInfoMapper;
 
 import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -109,11 +100,11 @@ public class AccommodationController {
 		return ResponseEntity.ok(AccommodationMapper.convertToSearchList(response));
 	}
 
-	private gRPCObject getBlockingStub() {
+	private gRPCObjectAccom getBlockingStub() {
 		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
 			.usePlaintext()
 			.build();
-		return gRPCObject.builder()
+		return gRPCObjectAccom.builder()
 			.channel(channel)
 			.stub(AccommodationServiceGrpc.newBlockingStub(channel))
 			.build();

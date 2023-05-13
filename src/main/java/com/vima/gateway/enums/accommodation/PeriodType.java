@@ -1,4 +1,4 @@
-package com.vima.gateway.enums;
+package com.vima.gateway.enums.accommodation;
 
 public enum PeriodType {
 	SEASON,

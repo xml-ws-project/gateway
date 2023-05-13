@@ -1,4 +1,4 @@
-package com.vima.gateway.mapper;
+package com.vima.gateway.mapper.accommodation;
 
 import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationRequest;
@@ -14,7 +14,7 @@ import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
 import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
 import com.vima.gateway.dto.accommodation.SearchHttpRequest;
 import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
-import com.vima.gateway.enums.PaymentType;
+import com.vima.gateway.enums.accommodation.PaymentType;
 
 import java.util.ArrayList;
 import java.util.List;
