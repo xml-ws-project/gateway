@@ -1,14 +1,15 @@
 package com.vima.gateway.mapper.reservation;
 
-import com.vima.gateway.AccommodationInfo;
-import com.vima.gateway.DateRange;
-import com.vima.gateway.ReservationRequest;
-import com.vima.gateway.ReservationResponse;
+import com.vima.gateway.*;
 import com.vima.gateway.converter.LocalDateConverter;
 import com.vima.gateway.dto.reservation.AccommodationInfoHttpResponse;
+import com.vima.gateway.dto.reservation.HostHttpResponse;
 import com.vima.gateway.dto.reservation.ReservationHttpRequest;
 import com.vima.gateway.dto.reservation.ReservationHttpResponse;
 import com.vima.gateway.enums.reservation.ReservationStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReservationMapper {
 
@@ -46,4 +47,19 @@ public class ReservationMapper {
                 .build();
     }
 
+    public static List<ReservationHttpResponse> convertGrpcToHttpList(ReservationList grpcList){
+        List<ReservationHttpResponse> httpList = new ArrayList<>();
+        grpcList.getReturnListList().forEach(list ->{
+            httpList.add(convertGrpcToHttp(list));
+        });
+
+        return httpList;
+    }
+
+    public static HostResponse convertHostResponseToGrpc(HostHttpResponse response){
+        return HostResponse.newBuilder()
+                .setId(response.getId())
+                .setAccept(response.isAccept())
+                .build();
+    }
 }
