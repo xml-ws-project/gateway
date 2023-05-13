@@ -1,8 +1,7 @@
-package com.vima.gateway.dto.grpcObjects;
+package com.vima.gateway.dto;
 
-import com.vima.gateway.AccommodationServiceGrpc;
+import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
 
-import io.grpc.ManagedChannel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +14,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class gRPCObjectAccom {
+public class SearchHttpResponse {
 
-	ManagedChannel channel;
-	AccommodationServiceGrpc.AccommodationServiceBlockingStub stub;
+	AccommodationHttpResponse accommodation;
+	double unitPrice;
+	double totalPrice;
 }
