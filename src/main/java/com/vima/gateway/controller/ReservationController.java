@@ -1,6 +1,8 @@
 package com.vima.gateway.controller;
 
+import com.google.protobuf.BoolValue;
 import com.vima.gateway.ReservationServiceGrpc;
+import com.vima.gateway.TextMessage;
 import com.vima.gateway.Uuid;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
 import com.vima.gateway.dto.reservation.ReservationHttpRequest;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/reservation")
@@ -32,6 +35,20 @@ public class ReservationController {
         var response = getBlockingStub().getStub().findById(Uuid.newBuilder().setValue(id).build());
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(ReservationMapper.convertGrpcToHttp(response));
+    }
+
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<String> cancelReservation(@PathVariable("id") final String id){
+        var response = getBlockingStub().getStub().cancelReservation(Uuid.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(response.getValue());
+    }
+
+    @PutMapping("/respond/{id}")
+    public ResponseEntity<TextMessage> reservationResponse(@PathVariable("id") final String id){
+        var response = getBlockingStub().getStub().reservationResponse(Uuid.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(response);
     }
 
     private gRPCObjectRes getBlockingStub() {
