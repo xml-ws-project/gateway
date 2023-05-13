@@ -33,4 +33,5 @@ public class AccommodationHttpResponse {
 	int maxGuests;
 	double regularPrice;
 	PaymentType paymentType;
+	boolean automaticAcceptance;
 }

@@ -37,6 +37,7 @@ public class AccommodationMapper {
 			.minGuests(grpcResponse.getMinGuests())
 			.regularPrice(grpcResponse.getRegularPrice())
 			.paymentType(PaymentType.valueOf(grpcResponse.getPaymentType().toString()))
+			.automaticAcceptance(grpcResponse.getAutomaticAcceptance())
 			.build();
 	}
 
