@@ -22,7 +22,7 @@ message AccommodationInfo{
 message ReservationRequest{
   int32 numOfGuests  = 1;
   DateRange desiredDate = 2;
-  AccommodationInfo accommodationInfo = 3;
+  string accomId = 3;
   string userId = 4;
 }
 

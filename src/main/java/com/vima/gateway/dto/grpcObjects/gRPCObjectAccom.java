@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class gRPCObjectAccom {
+public class  gRPCObjectAccom {
 
 	ManagedChannel channel;
 	AccommodationServiceGrpc.AccommodationServiceBlockingStub stub;

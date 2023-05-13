@@ -26,18 +26,6 @@ public class ReservationHttpRequest {
     @NotBlank
     String accomId;
 
-    @NotNull
-    int minGuests;
-
-    @NotNull
-    int maxGuests;
-
-    @NotBlank
-    String city;
-
-    @NotBlank
-    String country;
-
     @NotBlank
     String userId;
 }
