@@ -1,0 +1,5 @@
+package com.vima.gateway.enums.reservation;
+
+public enum ReservationStatus {
+    PENDING,ACCEPTED,DECLINED
+}

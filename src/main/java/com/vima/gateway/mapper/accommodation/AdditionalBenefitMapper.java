@@ -1,4 +1,4 @@
-package com.vima.gateway.mapper;
+package com.vima.gateway.mapper.accommodation;
 
 import com.vima.gateway.AdditionalBenefitRequest;
 import com.vima.gateway.AdditionalBenefitResponse;

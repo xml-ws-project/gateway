@@ -1,4 +1,4 @@
-package com.vima.gateway.mapper;
+package com.vima.gateway.mapper.accommodation;
 
 import com.vima.gateway.DateRange;
 import com.vima.gateway.SpecialInfoRequest;
@@ -6,7 +6,7 @@ import com.vima.gateway.SpecialInfoResponse;
 import com.vima.gateway.converter.LocalDateConverter;
 import com.vima.gateway.dto.specialInfo.SpecialInfoHttpRequest;
 import com.vima.gateway.dto.specialInfo.SpecialInfoHttpResponse;
-import com.vima.gateway.enums.PeriodType;
+import com.vima.gateway.enums.accommodation.PeriodType;
 
 import java.util.UUID;
 
