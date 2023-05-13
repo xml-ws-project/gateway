@@ -4,9 +4,12 @@ import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationRequest;
 import com.vima.gateway.AccommodationResponse;
 import com.vima.gateway.DateRange;
+import com.vima.gateway.SearchList;
 import com.vima.gateway.SearchRequest;
+import com.vima.gateway.SearchResponse;
 import com.vima.gateway.UpdateAccommodationRequest;
 import com.vima.gateway.converter.LocalDateConverter;
+import com.vima.gateway.dto.SearchHttpResponse;
 import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
 import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
 import com.vima.gateway.dto.accommodation.SearchHttpRequest;
@@ -102,5 +105,21 @@ public class AccommodationMapper {
 			.setPageSize(httpRequest.getPageSize())
 			.setPageNumber(httpRequest.getPageNumber())
 			.build();
+	}
+
+	public static SearchHttpResponse convertToSearchResponse(SearchResponse response) {
+		return SearchHttpResponse.builder()
+			.accommodation(convertGrpcToHttp(response.getAccommodation()))
+			.unitPrice(response.getUnitPrice())
+			.totalPrice(response.getTotalPrice())
+			.build();
+	}
+
+	public static List<SearchHttpResponse> convertToSearchList(SearchList grpcResponse) {
+		List<SearchHttpResponse> responseList = new ArrayList<>();
+		grpcResponse.getResponseList().forEach(response -> {
+			responseList.add(convertToSearchResponse(response));
+		});
+		return responseList;
 	}
 }
