@@ -1,6 +1,6 @@
 package com.vima.gateway.dto.accommodation;
 
-import com.vima.gateway.enums.PaymentType;
+import com.vima.gateway.enums.accommodation.PaymentType;
 
 import java.time.LocalDate;
 import java.util.List;

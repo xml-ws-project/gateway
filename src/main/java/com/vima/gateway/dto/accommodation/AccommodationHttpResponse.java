@@ -1,7 +1,7 @@
 package com.vima.gateway.dto.accommodation;
 
 import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpResponse;
-import com.vima.gateway.enums.PaymentType;
+import com.vima.gateway.enums.accommodation.PaymentType;
 
 import java.util.List;
 
