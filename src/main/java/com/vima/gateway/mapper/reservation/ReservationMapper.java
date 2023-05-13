@@ -18,18 +18,10 @@ public class ReservationMapper {
                 .setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getEnd()))
                 .build();
 
-        com.vima.gateway.AccommodationInfo accomInfo = AccommodationInfo.newBuilder()
-                .setAccomId(httpRequest.getAccomId())
-                .setMinGuests(httpRequest.getMinGuests())
-                .setMaxGuests(httpRequest.getMaxGuests())
-                .setCity(httpRequest.getCity())
-                .setCountry(httpRequest.getCountry())
-                .build();
-
         return ReservationRequest.newBuilder()
                 .setNumOfGuests(httpRequest.getNumOfGuests())
                 .setDesiredDate(dateRange)
-                .setAccommodationInfo(accomInfo)
+                .setAccomId(httpRequest.getAccomId())
                 .setUserId(httpRequest.getUserId())
                 .build();
     }
