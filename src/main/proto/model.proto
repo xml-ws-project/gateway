@@ -13,7 +13,7 @@ message UserDetailsRequest {
 }
 
 message UserDetailsResponse {
-  uint64 id = 1;
+  Uuid id = 1;
   string username = 2;
   string password = 3;
   Role role = 4;
@@ -28,6 +28,7 @@ message RegistrationRequest {
   string password = 5;
   Role role = 6;
   string phoneNumber = 7;
+  string location = 8;
 }
 
 message RegistrationResponse {
@@ -55,4 +56,7 @@ message DeleteUserRequest{
 
 message DeleteUserResponse{
   string message = 1;
+}
+message Uuid {
+  string value = 1;
 }

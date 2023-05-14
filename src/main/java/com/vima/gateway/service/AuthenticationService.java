@@ -44,7 +44,6 @@ public class AuthenticationService implements UserDetailsService {
         UserDetailsRequest req = UserDetailsRequest.newBuilder().setUsername(username).build();
         UserDetailsResponse response = blockingStub.getUserDetails(req);
         User user = User.builder()
-                .id(response.getId())
                 .username(response.getUsername())
                 .password(response.getPassword())
                 .role(response.getRole().equals(Role.GUEST) ? com.vima.gateway.model.Role.GUEST : com.vima.gateway.model.Role.HOST)

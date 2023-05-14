@@ -10,7 +10,7 @@ import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
 import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
 import com.vima.gateway.dto.user.DeleteUserHttpRequest;
 import com.vima.gateway.dto.user.EditUserHttpRequest;
-import com.vima.gateway.enums.PaymentType;
+import com.vima.gateway.enums.accommodation.PaymentType;
 import communication.DeleteUserRequest;
 import communication.EditUserRequest;
 import communication.RegistrationRequest;
@@ -32,6 +32,7 @@ public class UserMapper {
                 .setPhoneNumber(httpRequest.getPhoneNumber())
                 .setUsername(httpRequest.getUsername())
                 .setRole(Role.valueOf(httpRequest.getRole()))
+                .setLocation(httpRequest.getLocation())
                 .build();
     }
 
