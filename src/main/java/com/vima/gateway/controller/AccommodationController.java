@@ -47,7 +47,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/accommodation")
 @RequiredArgsConstructor
-public class AccommodationController {
+public class   AccommodationController {
 
 	@PostMapping(value = "/")
 	public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
