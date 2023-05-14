@@ -24,7 +24,7 @@ public class ApplicationConfig {
     @Bean
     public CorsConfigurationSource configurationSource() {
         final CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
+        corsConfig.setAllowedOrigins(List.of("http://localhost:4200"));
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
