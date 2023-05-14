@@ -1,14 +1,12 @@
 package com.vima.gateway.controller;
 
 import com.google.protobuf.BoolValue;
-import com.vima.gateway.Empty;
-import com.vima.gateway.ReservationServiceGrpc;
-import com.vima.gateway.TextMessage;
-import com.vima.gateway.Uuid;
+import com.vima.gateway.*;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
 import com.vima.gateway.dto.reservation.HostHttpResponse;
 import com.vima.gateway.dto.reservation.ReservationHttpRequest;
 import com.vima.gateway.dto.reservation.ReservationHttpResponse;
+import com.vima.gateway.dto.reservation.UserHttpRequest;
 import com.vima.gateway.mapper.reservation.ReservationMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -59,6 +57,13 @@ public class ReservationController {
         var result = getBlockingStub().getStub().hostResponse(ReservationMapper.convertHostResponseToGrpc(response));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(result.getValue());
+    }
+
+    @PostMapping("/user/all")
+    public ResponseEntity<List<ReservationHttpResponse>> findAllByUser(@RequestBody @Valid final UserHttpRequest request){
+        var result = getBlockingStub().getStub().findAllByUser(ReservationMapper.convertUserRequestToGrpc(request));
+        getBlockingStub().getChannel().shutdown();
+        return  ResponseEntity.ok(ReservationMapper.convertGrpcToHttpList(result));
     }
 
     private gRPCObjectRes getBlockingStub() {

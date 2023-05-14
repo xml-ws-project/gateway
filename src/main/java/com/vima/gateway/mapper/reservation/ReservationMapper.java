@@ -2,10 +2,7 @@ package com.vima.gateway.mapper.reservation;
 
 import com.vima.gateway.*;
 import com.vima.gateway.converter.LocalDateConverter;
-import com.vima.gateway.dto.reservation.AccommodationInfoHttpResponse;
-import com.vima.gateway.dto.reservation.HostHttpResponse;
-import com.vima.gateway.dto.reservation.ReservationHttpRequest;
-import com.vima.gateway.dto.reservation.ReservationHttpResponse;
+import com.vima.gateway.dto.reservation.*;
 import com.vima.gateway.enums.reservation.ReservationStatus;
 
 import java.util.ArrayList;
@@ -60,6 +57,13 @@ public class ReservationMapper {
         return HostResponse.newBuilder()
                 .setId(response.getId())
                 .setAccept(response.isAccept())
+                .build();
+    }
+
+    public static UserRequest convertUserRequestToGrpc(UserHttpRequest request){
+        return UserRequest.newBuilder()
+                .setId(request.getId())
+                .setRole(request.getRole())
                 .build();
     }
 }
