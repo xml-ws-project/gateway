@@ -12,6 +12,7 @@ import com.vima.gateway.service.AuthenticationService;
 import communication.RegistrationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,6 +50,12 @@ public class AuthenticationController {
     public ResponseEntity<String> helloWorld() {
 
         return ResponseEntity.ok(new BCryptPasswordEncoder().encode("123.Auth"));
+    }
+
+    @PostMapping("/dele")
+    public String dele(@RequestBody DeleteUserHttpRequest request){
+        DeleteUserHttpResponse res = authenticationService.delete(request);
+        return res.getMessage();
     }
 
     @GetMapping("/check")
