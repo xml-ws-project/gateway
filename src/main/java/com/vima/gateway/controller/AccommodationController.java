@@ -51,8 +51,12 @@ public class   AccommodationController {
 
     @PatchMapping("/")
     public ResponseEntity<?> update(final @RequestBody @Valid UpdateAccommodationHttpRequest request) {
-        var response = getBlockingStub().getStub().update(AccommodationMapper.convertHttpToGrpcUpdate(request));
-        getBlockingStub().getChannel().shutdown();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+            .usePlaintext()
+            .build();
+        AccommodationServiceGrpc.AccommodationServiceBlockingStub stub = AccommodationServiceGrpc.newBlockingStub(channel);
+        var response = stub.update(AccommodationMapper.convertHttpToGrpcUpdate(request));
+        channel.shutdown();
         return ResponseEntity.ok(response);
     }
 

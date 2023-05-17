@@ -43,6 +43,7 @@ public class AuthenticationService implements UserDetailsService {
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
         UserDetailsRequest req = UserDetailsRequest.newBuilder().setUsername(username).build();
         UserDetailsResponse response = blockingStub.getUserDetails(req);
+        channel.shutdown();
         User user = User.builder()
                 .id(response.getId())
                 .username(response.getUsername())
