@@ -12,7 +12,6 @@ import com.vima.gateway.service.AuthenticationService;
 import communication.RegistrationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -74,5 +73,4 @@ public class AuthenticationController {
         DeleteUserHttpResponse res = authenticationService.delete(request);
         return res.getMessage();
     }
-
 }
