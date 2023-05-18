@@ -1,5 +1,6 @@
 package com.vima.gateway.service;
 
+import com.vima.gateway.*;
 import com.vima.gateway.auth.RegistrationHttpRequest;
 import com.vima.gateway.dto.user.DeleteUserHttpRequest;
 import com.vima.gateway.dto.user.DeleteUserHttpResponse;
@@ -83,6 +84,31 @@ public class AuthenticationService implements UserDetailsService {
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+
+        User  user = loadUserByUsername(httpRequest.getUsername());
+        com.vima.gateway.model.Role role = user.getRole();
+        Long userId = user.getId();
+
+        if(role == com.vima.gateway.model.Role.GUEST ){
+            if(ifGuestHasActiveReservations(userId)) {
+                return DeleteUserHttpResponse.builder()
+                        .message("User has reservations in upcoming periods!")
+                        .build();
+            }
+        }
+
+        if(role == com.vima.gateway.model.Role.HOST ){
+            if(ifHostHasActiveReservations(userId)) {
+                return DeleteUserHttpResponse.builder()
+                        .message("User has reservations in upcoming periods!")
+                        .build();
+            }
+            else {
+                deleteHostAccommodations(userId);
+            }
+
+        }
+
         DeleteUserRequest req = UserMapper.convertHttpToGrpc(httpRequest);
         DeleteUserResponse res = blockingStub.delete(req);
         return DeleteUserHttpResponse.builder()
@@ -90,5 +116,37 @@ public class AuthenticationService implements UserDetailsService {
                 .build();
     }
 
+    private Boolean ifGuestHasActiveReservations(Long id){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+                .usePlaintext()
+                .build();
+        ReservationServiceGrpc.ReservationServiceBlockingStub blockingStub = ReservationServiceGrpc.newBlockingStub(channel);
+
+        CheckReservationsForUserRequest req = CheckReservationsForUserRequest.newBuilder().setId(id).build();
+        CheckReservationsForUserResponse res = blockingStub.checkIfGuestHasActiveReservations(req);
+        return res.getContains();
+    }
+
+    private Boolean ifHostHasActiveReservations(Long id){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+                .usePlaintext()
+                .build();
+        ReservationServiceGrpc.ReservationServiceBlockingStub blockingStub = ReservationServiceGrpc.newBlockingStub(channel);
+
+        CheckReservationsForUserRequest req = CheckReservationsForUserRequest.newBuilder().setId(id).build();
+        CheckReservationsForUserResponse res = blockingStub.checkIfHostHasActiveReservations(req);
+
+        return res.getContains();
+    }
+
+    private String deleteHostAccommodations(Long id){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+                .usePlaintext()
+                .build();
+        AccommodationServiceGrpc.AccommodationServiceBlockingStub blockingStub = AccommodationServiceGrpc.newBlockingStub(channel);
+        DeleteHostAccommodationsRequest req = DeleteHostAccommodationsRequest.newBuilder().setId(id).build();
+        DeleteHostAccommodationResponse res = blockingStub.deleteHostAccommodations(req);
+        return res.getMessage();
+    }
 
 }

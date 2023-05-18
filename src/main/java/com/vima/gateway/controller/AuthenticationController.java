@@ -29,14 +29,12 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             var user = authenticationService.loadUserByUsername(request.getUsername());
             var jwtToken = jwtService.generateToken(user);
-            var authResponse = AuthenticationResponse.builder()
-                    .token(jwtToken)
-                    .build();
-            return ResponseEntity.ok(authResponse);
+
+            return ResponseEntity.ok(jwtToken);
     }
 
     @PostMapping("/register")
@@ -67,5 +65,12 @@ public class AuthenticationController {
         DeleteUserHttpResponse res = authenticationService.delete(request);
         return res.getMessage();
     }
+    @PostMapping("/dele")
+    public String dele(@RequestBody DeleteUserHttpRequest request){
+        DeleteUserHttpResponse res = authenticationService.delete(request);
+        return res.getMessage();
+    }
+
+
 
 }
