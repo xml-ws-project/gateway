@@ -4,6 +4,7 @@ import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationRequest;
 import com.vima.gateway.AccommodationResponse;
 import com.vima.gateway.DateRange;
+import com.vima.gateway.Empty;
 import com.vima.gateway.SearchList;
 import com.vima.gateway.SearchRequest;
 import com.vima.gateway.SearchResponse;
@@ -42,16 +43,23 @@ public class AccommodationMapper {
 	}
 
 	public static UpdateAccommodationRequest convertHttpToGrpcUpdate(UpdateAccommodationHttpRequest httpRequest) {
-		com.vima.gateway.DateRange dateRange = DateRange.newBuilder()
-			.setStart(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getStart()))
-			.setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getEnd()))
-			.build();
-
-		return UpdateAccommodationRequest.newBuilder()
+		var updateRequestBuilder = UpdateAccommodationRequest.newBuilder()
 			.setAccommodationId(httpRequest.getAccommodationId())
-			.setPeriod(dateRange)
-			.setPrice(httpRequest.getPrice())
-			.build();
+			.setPrice(httpRequest.getPrice());
+
+		UpdateAccommodationRequest updateRequest;
+
+		if (httpRequest.getStart() != null && httpRequest.getEnd() != null) {
+			com.vima.gateway.DateRange dateRange = DateRange.newBuilder()
+				.setStart(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getStart()))
+				.setEnd(LocalDateConverter.convertLocalDateToGoogleTimestamp(httpRequest.getEnd()))
+				.build();
+			updateRequest = updateRequestBuilder.setPeriod(dateRange).build();
+		} else {
+			updateRequest = updateRequestBuilder.build();
+		}
+
+		return updateRequest;
 	}
 
 	public static AccommodationRequest convertHttpToGrpc(AccommodationHttpRequest httpRequest) {

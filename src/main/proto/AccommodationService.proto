@@ -119,6 +119,10 @@ message DeleteHostAccommodationResponse{
   string message = 1;
 }
 
+message BenefitList {
+  repeated AdditionalBenefitResponse response = 1;
+}
+
 service AccommodationService {
   rpc create(AccommodationRequest) returns (AccommodationResponse);
   rpc update(UpdateAccommodationRequest) returns (Empty);
@@ -129,4 +133,5 @@ service AccommodationService {
   rpc createSpecialPeriod(SpecialInfoRequest) returns (SpecialInfoResponse);
   rpc searchAccommodation(SearchRequest) returns (SearchList);
   rpc deleteHostAccommodations(DeleteHostAccommodationsRequest) returns (DeleteHostAccommodationResponse);
+  rpc findAllBenefits(Empty) returns(BenefitList);
 }
