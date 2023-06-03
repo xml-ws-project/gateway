@@ -1,6 +1,7 @@
 package com.vima.gateway.controller;
 
 import com.vima.gateway.RatingServiceGrpc;
+import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
 import com.vima.gateway.dto.rating.RatingHttpRequest;
@@ -10,10 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -27,6 +25,13 @@ public class RatingController {
         var response = getBlockingStub().getStub().create(RatingMapper.convertHttpToGrpc(request));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(RatingMapper.convertGrpcToHttp(response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Long id){
+        var response = getBlockingStub().getStub().delete(RatingServiceOuterClass.LONG.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(response.getValue());
     }
 
     private gRPCObjectRating getBlockingStub(){
