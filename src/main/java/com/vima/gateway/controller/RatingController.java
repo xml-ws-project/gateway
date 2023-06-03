@@ -4,6 +4,7 @@ import com.vima.gateway.RatingServiceGrpc;
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
+import com.vima.gateway.dto.rating.EditRatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpResponse;
 import com.vima.gateway.mapper.rating.RatingMapper;
@@ -28,8 +29,15 @@ public class RatingController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id){
+    public ResponseEntity<String> delete(@PathVariable("id") final Long id){
         var response = getBlockingStub().getStub().delete(RatingServiceOuterClass.LONG.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(response.getValue());
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<String> edit(@RequestBody @Valid final EditRatingHttpRequest request){
+        var response = getBlockingStub().getStub().edit(RatingMapper.convertEditHttpToGrpc(request));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(response.getValue());
     }

@@ -2,6 +2,7 @@ package com.vima.gateway.mapper.rating;
 
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.converter.LocalDateConverter;
+import com.vima.gateway.dto.rating.EditRatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpResponse;
 import org.springframework.stereotype.Component;
@@ -31,4 +32,12 @@ public class RatingMapper {
         return  result;
     }
 
+    public static RatingServiceOuterClass.EditRatingRequest convertEditHttpToGrpc(EditRatingHttpRequest request){
+        var result = RatingServiceOuterClass.EditRatingRequest.newBuilder()
+                .setId(request.getId())
+                .setNewValue(request.getNewValue())
+                .build();
+
+        return result;
+    }
 }
