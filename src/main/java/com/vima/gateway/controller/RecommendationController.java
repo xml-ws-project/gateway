@@ -29,7 +29,7 @@ public class RecommendationController {
     }
 
     private gRPCObjectRec getBlockingStub() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9095)
                 .usePlaintext()
                 .build();
         return gRPCObjectRec.builder()
