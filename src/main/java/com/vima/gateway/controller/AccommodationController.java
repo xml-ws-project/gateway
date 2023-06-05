@@ -42,7 +42,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/accommodation")
 @RequiredArgsConstructor
-public class   AccommodationController {
+public class AccommodationController {
 
     @PostMapping(value = "/")
     public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
@@ -107,6 +107,13 @@ public class   AccommodationController {
         BenefitList list = getBlockingStub().getStub().findAllBenefits(Empty.newBuilder().build());
         getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AdditionalBenefitMapper.convertGrpcToHttpList(list.getResponseList()));
+    }
+
+    @GetMapping("/recommended/{userId}")
+    public ResponseEntity<List<AccommodationHttpResponse>> findRecommended(@PathVariable("userId") final String userId){
+        var result = getBlockingStub().getStub().findRecommended(Uuid.newBuilder().setValue(userId).build());
+        getBlockingStub().getChannel().shutdown();
+        return  ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(result));
     }
 
     private gRPCObjectAccom getBlockingStub() {

@@ -9,23 +9,30 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/recommendation")
 @RequiredArgsConstructor
 public class RecommendationController {
 
     @PostMapping("/create/user/{id}")
-    public ResponseEntity<String> createUserNod(@PathVariable("id") final String userId){
-        var response = getBlockingStub().getStub().createUserNod(Uuid.newBuilder().setValue(userId).build());
+    public void createUserNode(@PathVariable("id") final String userId){
+        getBlockingStub().getStub().createUserNode(Uuid.newBuilder().setValue(userId).build());
         getBlockingStub().getChannel().shutdown();
-        return ResponseEntity.ok(response.getValue());
     }
 
     @PostMapping("/create/accom/{id}")
-    public ResponseEntity<String> createAccomNod(@PathVariable("id") final String accomId){
-        var response = getBlockingStub().getStub().createAccomNod(Uuid.newBuilder().setValue(accomId).build());
+    public void createAccomNode(@PathVariable("id") final String accomId){
+        getBlockingStub().getStub().createAccomNode(Uuid.newBuilder().setValue(accomId).build());
         getBlockingStub().getChannel().shutdown();
-        return ResponseEntity.ok(response.getValue());
+    }
+
+    @GetMapping("/recommend/{id}")
+    public List<String> recommend(@PathVariable("id") final String userId) {
+        var result = getBlockingStub().getStub().recommend(Uuid.newBuilder().setValue(userId).build());
+        getBlockingStub().getChannel().shutdown();
+        return result.getIdsList();
     }
 
     private gRPCObjectRec getBlockingStub() {
