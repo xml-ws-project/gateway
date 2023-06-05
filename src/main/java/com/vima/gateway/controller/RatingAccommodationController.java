@@ -12,10 +12,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 
 import javax.validation.Valid;
@@ -29,6 +26,13 @@ public class RatingAccommodationController {
         var response = getBlockingStub().getStub().create(RatingAccommodationMapper.convertHttpToGrpc(request));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(RatingAccommodationMapper.convertGrpcToHttp(response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") final Long id){
+        var response = getBlockingStub().getStub().delete(RatingAccoommodationService.ID.newBuilder().setId(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(response.getValue());
     }
 
     private gRPCObjectRatingAccommodation getBlockingStub(){
