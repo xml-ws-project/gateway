@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/recommendation")
 @RequiredArgsConstructor
@@ -26,10 +28,11 @@ public class RecommendationController {
         getBlockingStub().getChannel().shutdown();
     }
 
-    @PostMapping("/recommend/{id}")
-    public void recommend(@PathVariable("id") final String userId){
-        getBlockingStub().getStub().recommend(Uuid.newBuilder().setValue(userId).build());
+    @GetMapping("/recommend/{id}")
+    public List<String> recommend(@PathVariable("id") final String userId){
+        var result = getBlockingStub().getStub().recommend(Uuid.newBuilder().setValue(userId).build());
         getBlockingStub().getChannel().shutdown();
+        return result.getIdsList();
     }
 
     private gRPCObjectRec getBlockingStub() {
