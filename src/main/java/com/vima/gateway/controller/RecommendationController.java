@@ -29,7 +29,7 @@ public class RecommendationController {
     }
 
     @GetMapping("/recommend/{id}")
-    public List<String> recommend(@PathVariable("id") final String userId){
+    public List<String> recommend(@PathVariable("id") final String userId) {
         var result = getBlockingStub().getStub().recommend(Uuid.newBuilder().setValue(userId).build());
         getBlockingStub().getChannel().shutdown();
         return result.getIdsList();
