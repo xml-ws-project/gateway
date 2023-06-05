@@ -26,6 +26,12 @@ public class RecommendationController {
         getBlockingStub().getChannel().shutdown();
     }
 
+    @PostMapping("/recommend/{id}")
+    public void recommend(@PathVariable("id") final String userId){
+        getBlockingStub().getStub().recommend(Uuid.newBuilder().setValue(userId).build());
+        getBlockingStub().getChannel().shutdown();
+    }
+
     private gRPCObjectRec getBlockingStub() {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9095)
                 .usePlaintext()
