@@ -1,0 +1,44 @@
+package com.vima.gateway.controller;
+
+import com.vima.gateway.RatingAccommodationServiceGrpc;
+import com.vima.gateway.RatingAccoommodationService;
+import com.vima.gateway.RatingServiceGrpc;
+import com.vima.gateway.dto.grpcObjects.gRPCObjectRatingAccommodation;
+import com.vima.gateway.dto.rating.RatingAccommodationHttpRequest;
+import com.vima.gateway.dto.rating.RatingAccommodationHttpResponse;
+import com.vima.gateway.mapper.rating.RatingAccommodationMapper;
+import com.vima.gateway.mapper.rating.RatingMapper;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
+
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping("/rating-accommodation")
+@RequiredArgsConstructor
+public class RatingAccommodationController {
+    @PostMapping("/")
+    public ResponseEntity<RatingAccommodationHttpResponse>  create (@RequestBody @Valid final RatingAccommodationHttpRequest request) {
+        var response = getBlockingStub().getStub().create(RatingAccommodationMapper.convertHttpToGrpc(request));
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(RatingAccommodationMapper.convertGrpcToHttp(response));
+    }
+
+    private gRPCObjectRatingAccommodation getBlockingStub(){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+                .usePlaintext()
+                .build();
+
+        return gRPCObjectRatingAccommodation.builder()
+                .channel(channel)
+                .stub(RatingAccommodationServiceGrpc.newBlockingStub(channel))
+                .build();
+    }
+}
