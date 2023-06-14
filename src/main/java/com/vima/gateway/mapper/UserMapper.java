@@ -37,6 +37,28 @@ public class UserMapper {
 
     public static EditUserRequest convertHttpToGrpc(EditUserHttpRequest httpRequest){
 
+            if(httpRequest.getEmail() == null){
+                httpRequest.setEmail("");
+            }
+            if(httpRequest.getPassword() == null){
+            httpRequest.setPassword("");
+            }
+            if(httpRequest.getFirstName() == null){
+                httpRequest.setFirstName("");
+            }
+            if(httpRequest.getLastName() == null){
+                httpRequest.setLastName("");
+            }
+            if(httpRequest.getPhoneNumber() == null){
+                httpRequest.setPhoneNumber("");
+            }
+            if(httpRequest.getUsername() == null){
+                httpRequest.setUsername("");
+            }
+            if(httpRequest.getLocation() == null){
+                httpRequest.setLocation("");
+            }
+
         return EditUserRequest.newBuilder()
                 .setNewEmail(httpRequest.getEmail())
                 .setNewPassword(httpRequest.getPassword())

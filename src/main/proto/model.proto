@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+
 option java_multiple_files = true;
 package communication;
 
@@ -56,3 +57,4 @@ message DeleteUserRequest{
 message DeleteUserResponse{
   string message = 1;
 }
+

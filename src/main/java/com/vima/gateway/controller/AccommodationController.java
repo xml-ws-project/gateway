@@ -1,5 +1,7 @@
 package com.vima.gateway.controller;
 
+import com.vima.gateway.AdditionalBenefitResponse;
+import com.vima.gateway.BenefitList;
 import com.vima.gateway.Empty;
 import com.vima.gateway.AccommodationList;
 import com.vima.gateway.AccommodationResponse;
@@ -40,26 +42,26 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/accommodation")
 @RequiredArgsConstructor
-public class   AccommodationController {
+public class AccommodationController {
 
     @PostMapping(value = "/")
     public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
         AccommodationResponse response = getBlockingStub().getStub().create(AccommodationMapper.convertHttpToGrpc(request));
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttp(response));
     }
 
     @PatchMapping("/")
     public ResponseEntity<?> update(final @RequestBody @Valid UpdateAccommodationHttpRequest request) {
         var response = getBlockingStub().getStub().update(AccommodationMapper.convertHttpToGrpcUpdate(request));
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<AccommodationHttpResponse> findById(@PathVariable("id") final String id) {
         var response = getBlockingStub().getStub().findById(Uuid.newBuilder().setValue(id).build());
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttp(response));
     }
 
@@ -67,21 +69,21 @@ public class   AccommodationController {
     @GetMapping("/all/{id}")
     public ResponseEntity<List<AccommodationHttpResponse>> findAllByHostId(@PathVariable("id") final String id) {
         var response = getBlockingStub().getStub().findAllByHostId(Uuid.newBuilder().setValue(id).build());
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(response));
     }
 
     @PostMapping("/benefit")
     public ResponseEntity<AdditionalBenefitHttpResponse> addBenefit(@RequestBody @Valid final AdditionalBenefitHttpRequest benefit) {
         var response = getBlockingStub().getStub().addBenefit(AdditionalBenefitMapper.convertHttpToGrpc(benefit));
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AdditionalBenefitMapper.convertGrpcToHttp(response));
     }
 
     @PostMapping("/special-period")
     public ResponseEntity<SpecialInfoHttpResponse> createSpecialPeriod(@RequestBody @Valid final SpecialInfoHttpRequest request) {
         var response = getBlockingStub().getStub().createSpecialPeriod(SpecialInfoMapper.convertHttpToGrpc(request));
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(SpecialInfoMapper.convertGrpcToHttp(response));
     }
 
@@ -89,15 +91,29 @@ public class   AccommodationController {
     public ResponseEntity<List<AccommodationHttpResponse>> findAll() {
         Empty empty = Empty.newBuilder().build();
         AccommodationList response = getBlockingStub().getStub().findAll(empty);
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(response));
     }
 
     @PostMapping("/search")
     public ResponseEntity<List<SearchHttpResponse>> search(@RequestBody @Valid final SearchHttpRequest searchRequest) {
         SearchList response = getBlockingStub().getStub().searchAccommodation(AccommodationMapper.convertSearchRequest(searchRequest));
-        getBlockingStub().getChannel().shutdown();
+        getBlockingStub().getChannel().shutdownNow();
         return ResponseEntity.ok(AccommodationMapper.convertToSearchList(response));
+    }
+
+    @GetMapping("/all-benefits")
+    public ResponseEntity<List<AdditionalBenefitHttpResponse>> findAllBenefits() {
+        BenefitList list = getBlockingStub().getStub().findAllBenefits(Empty.newBuilder().build());
+        getBlockingStub().getChannel().shutdownNow();
+        return ResponseEntity.ok(AdditionalBenefitMapper.convertGrpcToHttpList(list.getResponseList()));
+    }
+
+    @GetMapping("/recommended/{userId}")
+    public ResponseEntity<List<AccommodationHttpResponse>> findRecommended(@PathVariable("userId") final String userId){
+        var result = getBlockingStub().getStub().findRecommended(Uuid.newBuilder().setValue(userId).build());
+        getBlockingStub().getChannel().shutdown();
+        return  ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(result));
     }
 
     private gRPCObjectAccom getBlockingStub() {

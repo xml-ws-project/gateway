@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(
                         (authz) -> authz
-                                .requestMatchers("/api/auth/register","/api/auth/authenticate").permitAll()
+                                .requestMatchers("/api/auth/register","/api/auth/authenticate", "/accommodation/search").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
