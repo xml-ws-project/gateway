@@ -60,6 +60,7 @@ public class AuthenticationService implements UserDetailsService {
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+        httpRequest.setPassword(passwordEncoder.encode(httpRequest.getPassword()));
         RegistrationRequest req = UserMapper.convertHttpToGrpc(httpRequest);
         RegistrationResponse response = blockingStub.register(req);
         return RegistrationResponse.newBuilder()
