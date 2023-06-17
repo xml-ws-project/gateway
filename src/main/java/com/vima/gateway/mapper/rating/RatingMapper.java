@@ -3,9 +3,13 @@ package com.vima.gateway.mapper.rating;
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.converter.LocalDateConverter;
 import com.vima.gateway.dto.rating.EditRatingHttpRequest;
+import com.vima.gateway.dto.rating.HostRatingHttpResponse;
 import com.vima.gateway.dto.rating.RatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class RatingMapper {
@@ -40,4 +44,27 @@ public class RatingMapper {
 
         return result;
     }
+
+    public static HostRatingHttpResponse convertGrpcToHttpForHost(RatingServiceOuterClass.RatingByHostId grpcResponse){
+        var result = HostRatingHttpResponse.builder()
+                .id(grpcResponse.getId())
+                .value(grpcResponse.getValue())
+                .username(grpcResponse.getUsername())
+                .guestId(grpcResponse.getGuestId())
+                .date(LocalDateConverter.convertGoogleTimeStampToLocalDate(grpcResponse.getDate()))
+                .build();
+        return result;
+
+
+    }
+
+    public static List<HostRatingHttpResponse> convertGrpcToHttpList(RatingServiceOuterClass.RatingList grpcResponseList){
+        List<HostRatingHttpResponse> httpResponseList = new ArrayList<>();
+        grpcResponseList.getResponseList().forEach(response ->{
+            httpResponseList.add(convertGrpcToHttpForHost(response));
+        });
+        return httpResponseList;
+    }
+
+
 }

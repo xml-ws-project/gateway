@@ -5,6 +5,7 @@ import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
 import com.vima.gateway.dto.rating.EditRatingHttpRequest;
+import com.vima.gateway.dto.rating.HostRatingHttpResponse;
 import com.vima.gateway.dto.rating.RatingHttpRequest;
 import com.vima.gateway.dto.rating.RatingHttpResponse;
 import com.vima.gateway.mapper.rating.RatingMapper;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/rating")
@@ -40,6 +42,13 @@ public class RatingController {
         var response = getBlockingStub().getStub().edit(RatingMapper.convertEditHttpToGrpc(request));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(response.getValue());
+    }
+
+    @GetMapping("/all/{id}")
+    public ResponseEntity<List<HostRatingHttpResponse>> findAllByHostId(@PathVariable("id") final Long id){
+       var response  =getBlockingStub().getStub().findAllByHostId(RatingServiceOuterClass.LONG.newBuilder().setValue(id).build());
+       getBlockingStub().getChannel().shutdown();
+       return  ResponseEntity.ok(RatingMapper.convertGrpcToHttpList(response));
     }
 
     private gRPCObjectRating getBlockingStub(){
