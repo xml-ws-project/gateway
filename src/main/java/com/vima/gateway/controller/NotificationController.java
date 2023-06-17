@@ -8,6 +8,7 @@ import com.vima.gateway.mapper.notification.NotificationMapper;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationController {
 
+	@Value("${channel.address.auth-ms}")
+	private String channelAddress;
+
 	@PatchMapping("/")
 	public ResponseEntity<?> editNotificationOptions(@RequestBody @Valid EditNotificationHttpRequest request) {
 		var userBlockingStub = getBlockingStub();
@@ -31,7 +35,7 @@ public class NotificationController {
 	}
 
 	private gRPCObjectUser getBlockingStub() {
-		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+		ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAddress, 9092)
 			.usePlaintext()
 			.build();
 		return gRPCObjectUser.builder()
