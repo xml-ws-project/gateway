@@ -3,6 +3,7 @@ package com.vima.gateway.security.config;
 import com.vima.gateway.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +19,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfig {
+
+    @Value("${channel.address.auth-ms:auth-ms}")
+    private String channelAuthAddress;
+    @Value("${channel.address.accommodation-ms}")
+    private String channelAccommodationAddress;
+    @Value("${channel.address.reservation-ms}")
+    private String channelReservationAddress;
 
     @Bean
     public CorsConfigurationSource configurationSource() {
@@ -45,7 +52,7 @@ public class ApplicationConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(new AuthenticationService(passwordEncoder()));
+        provider.setUserDetailsService(new AuthenticationService(passwordEncoder(), channelAuthAddress, channelAccommodationAddress, channelReservationAddress));
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

@@ -16,7 +16,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+
 import com.vima.gateway.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,7 +37,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccommodationController {
 
+
     private final AuthenticationService authenticationService;
+    @Value("${channel.address.accommodation-ms}")
+    private String channelAddress;
+
 
     @PostMapping(value = "/")
     public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
@@ -117,7 +123,7 @@ public class AccommodationController {
     }
 
     private gRPCObjectAccom getBlockingStub() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAddress, 9093)
                 .usePlaintext()
                 .build();
         return gRPCObjectAccom.builder()

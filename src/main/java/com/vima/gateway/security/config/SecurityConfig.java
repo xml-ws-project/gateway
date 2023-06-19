@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests(
                         (authz) -> authz
-                                .requestMatchers("/api/auth/register","/api/auth/authenticate", "/accommodation/search").permitAll()
+                                .requestMatchers("/api/auth/register","/api/auth/authenticate", "/accommodation/search", "/actuator/prometheus").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )
