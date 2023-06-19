@@ -150,4 +150,13 @@ public class AuthenticationService implements UserDetailsService {
         return res.getMessage();
     }
 
+    public String getByEmail(String email){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+                .usePlaintext()
+                .build();
+        userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+        hostId res = blockingStub.getByEmail(communication.email.newBuilder().setValue(email).build());
+        return res.getValue();
+    }
+
 }

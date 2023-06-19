@@ -1,20 +1,9 @@
 package com.vima.gateway.mapper.accommodation;
 
-import com.vima.gateway.AccommodationList;
-import com.vima.gateway.AccommodationRequest;
-import com.vima.gateway.AccommodationResponse;
-import com.vima.gateway.DateRange;
-import com.vima.gateway.Empty;
-import com.vima.gateway.SearchList;
-import com.vima.gateway.SearchRequest;
-import com.vima.gateway.SearchResponse;
-import com.vima.gateway.UpdateAccommodationRequest;
+import com.vima.gateway.*;
 import com.vima.gateway.converter.LocalDateConverter;
 import com.vima.gateway.dto.SearchHttpResponse;
-import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
-import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
-import com.vima.gateway.dto.accommodation.SearchHttpRequest;
-import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
+import com.vima.gateway.dto.accommodation.*;
 import com.vima.gateway.enums.accommodation.PaymentType;
 
 import java.util.ArrayList;
@@ -130,5 +119,19 @@ public class AccommodationMapper {
 			responseList.add(convertToSearchResponse(response));
 		});
 		return responseList;
+	}
+
+	public static AccommodationFilterRequest convertToFilterRequest(FilterHttpRequest request){
+
+			AccommodationFilterRequest.Builder builder = AccommodationFilterRequest.newBuilder()
+					.setMinPrice(request.getMinPrice())
+					.setMaxPrice(request.getMaxPrice())
+					.setHostId(request.getHostName());
+			for(String s: request.getBenefits()){
+				builder.addBenefits(s);
+			}
+			return builder.build();
+
+
 	}
 }

@@ -75,4 +75,9 @@ public class AuthenticationController {
         DeleteUserHttpResponse res = authenticationService.delete(request);
         return res.getMessage();
     }
+
+    @GetMapping("/{email}")
+    public String getHostId(@PathVariable("email") String email){
+        return authenticationService.getByEmail(email);
+    }
 }
