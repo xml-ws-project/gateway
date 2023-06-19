@@ -33,9 +33,11 @@ public class AuthenticationController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
             var user = authenticationService.loadUserByUsername(request.getUsername());
             var jwtToken = jwtService.generateToken(user);
-//            var authResponse = AuthenticationResponse.builder()
-//                    .token(jwtToken)
-//                    .build();
+
+            var authResponse = AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .build();
+
             return ResponseEntity.ok(jwtToken);
     }
 
@@ -72,5 +74,10 @@ public class AuthenticationController {
     public String delete(@RequestBody DeleteUserHttpRequest request){
         DeleteUserHttpResponse res = authenticationService.delete(request);
         return res.getMessage();
+    }
+
+    @GetMapping("/{email}")
+    public String getHostId(@PathVariable("email") String email){
+        return authenticationService.getByEmail(email);
     }
 }

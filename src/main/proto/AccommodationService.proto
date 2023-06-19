@@ -123,6 +123,13 @@ message BenefitList {
   repeated AdditionalBenefitResponse response = 1;
 }
 
+message AccommodationFilterRequest{
+  uint64 minPrice = 1;
+  uint64 maxPrice = 2;
+  repeated string benefits = 3;
+  string hostId = 4;
+}
+
 service AccommodationService {
   rpc create(AccommodationRequest) returns (AccommodationResponse);
   rpc update(UpdateAccommodationRequest) returns (Empty);
@@ -135,4 +142,5 @@ service AccommodationService {
   rpc deleteHostAccommodations(DeleteHostAccommodationsRequest) returns (DeleteHostAccommodationResponse);
   rpc findAllBenefits(Empty) returns(BenefitList);
   rpc findRecommended(Uuid) returns (AccommodationList);
+  rpc filterAccommodations(AccommodationFilterRequest) returns(SearchList);
 }

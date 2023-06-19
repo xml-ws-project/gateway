@@ -11,6 +11,8 @@ import com.vima.gateway.mapper.reservation.ReservationMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,9 @@ import java.util.UUID;
 @RequestMapping("/reservation")
 @RequiredArgsConstructor
 public class ReservationController {
+
+    @Value("${channel.address.reservation-ms}")
+    private String channelAddress;
 
     @PostMapping("/")
     public ResponseEntity<ReservationHttpResponse> create(@RequestBody @Valid final ReservationHttpRequest request){
@@ -67,7 +72,7 @@ public class ReservationController {
     }
 
     private gRPCObjectRes getBlockingStub() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAddress, 9094)
                 .usePlaintext()
                 .build();
         return gRPCObjectRes.builder()

@@ -12,54 +12,63 @@ import communication.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService implements UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
+    private final String channelAuthAddress;
+    private final String channelAccommodationAddress;
+    private final String channelReservationAddress;
 
-    private final String url = "http://localhost:8082/api/user/user-details/";
+    @Autowired
+    public AuthenticationService(PasswordEncoder passwordEncoder,
+        @Value("${channel.address.auth-ms}") String channelAuthAddress,
+        @Value("${channel.address.accommodation-ms}") String channelAccommodationAddress,
+        @Value("${channel.address.reservation-ms}") String channelReservationAddress) {
+        this.passwordEncoder = passwordEncoder;
+        this.channelAuthAddress = channelAuthAddress;
+        this.channelAccommodationAddress = channelAccommodationAddress;
+        this.channelReservationAddress = channelReservationAddress;
+    }
 
     @Override
     public User loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            return getUserDetails(username);
+            ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAuthAddress, 9092)
+                .usePlaintext()
+                .build();
+
+            userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+            UserDetailsRequest req = UserDetailsRequest.newBuilder().setUsername(username).build();
+            UserDetailsResponse response = blockingStub.getUserDetails(req);
+            channel.shutdown();
+            return User.builder()
+                .id(response.getId())
+                .username(response.getUsername())
+                .password(response.getPassword())
+                .role(response.getRole().equals(Role.GUEST) ? com.vima.gateway.model.Role.GUEST : com.vima.gateway.model.Role.HOST)
+                .penalties(response.getPenalties()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private User getUserDetails(String username){
-
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
-                .usePlaintext()
-                .build();
-
-        userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
-        UserDetailsRequest req = UserDetailsRequest.newBuilder().setUsername(username).build();
-        UserDetailsResponse response = blockingStub.getUserDetails(req);
-        channel.shutdown();
-        User user = User.builder()
-                .id(response.getId())
-                .username(response.getUsername())
-                .password(response.getPassword())
-                .role(response.getRole().equals(Role.GUEST) ? com.vima.gateway.model.Role.GUEST : com.vima.gateway.model.Role.HOST)
-                .penalties(response.getPenalties()).build();
-        return user;
-    }
-
     public RegistrationResponse register(RegistrationHttpRequest httpRequest){
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAuthAddress, 9092)
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+        httpRequest.setPassword(passwordEncoder.encode(httpRequest.getPassword()));
         RegistrationRequest req = UserMapper.convertHttpToGrpc(httpRequest);
         RegistrationResponse response = blockingStub.register(req);
         return RegistrationResponse.newBuilder()
@@ -69,7 +78,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public EditUserHttpResponse edit(EditUserHttpRequest httpRequest){
 
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAuthAddress, 9092)
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
@@ -81,7 +90,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public DeleteUserHttpResponse delete(DeleteUserHttpRequest httpRequest){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAuthAddress, 9092)
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
@@ -118,7 +127,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     private Boolean ifGuestHasActiveReservations(Long id){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelReservationAddress, 9094)
                 .usePlaintext()
                 .build();
         ReservationServiceGrpc.ReservationServiceBlockingStub blockingStub = ReservationServiceGrpc.newBlockingStub(channel);
@@ -129,7 +138,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     private Boolean ifHostHasActiveReservations(Long id){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9094)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelReservationAddress, 9094)
                 .usePlaintext()
                 .build();
         ReservationServiceGrpc.ReservationServiceBlockingStub blockingStub = ReservationServiceGrpc.newBlockingStub(channel);
@@ -141,13 +150,22 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     private String deleteHostAccommodations(Long id){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAccommodationAddress, 9093)
                 .usePlaintext()
                 .build();
         AccommodationServiceGrpc.AccommodationServiceBlockingStub blockingStub = AccommodationServiceGrpc.newBlockingStub(channel);
         DeleteHostAccommodationsRequest req = DeleteHostAccommodationsRequest.newBuilder().setId(id).build();
         DeleteHostAccommodationResponse res = blockingStub.deleteHostAccommodations(req);
         return res.getMessage();
+    }
+
+    public String getByEmail(String email){
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+                .usePlaintext()
+                .build();
+        userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
+        hostId res = blockingStub.getByEmail(communication.email.newBuilder().setValue(email).build());
+        return res.getValue();
     }
 
 }

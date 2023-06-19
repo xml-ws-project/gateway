@@ -1,18 +1,8 @@
 package com.vima.gateway.controller;
 
-import com.vima.gateway.AdditionalBenefitResponse;
-import com.vima.gateway.BenefitList;
-import com.vima.gateway.Empty;
-import com.vima.gateway.AccommodationList;
-import com.vima.gateway.AccommodationResponse;
-import com.vima.gateway.AccommodationServiceGrpc;
-import com.vima.gateway.SearchList;
-import com.vima.gateway.Uuid;
+import com.vima.gateway.*;
 import com.vima.gateway.dto.SearchHttpResponse;
-import com.vima.gateway.dto.accommodation.AccommodationHttpRequest;
-import com.vima.gateway.dto.accommodation.AccommodationHttpResponse;
-import com.vima.gateway.dto.accommodation.SearchHttpRequest;
-import com.vima.gateway.dto.accommodation.UpdateAccommodationHttpRequest;
+import com.vima.gateway.dto.accommodation.*;
 import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpRequest;
 import com.vima.gateway.dto.additionalBenefit.AdditionalBenefitHttpResponse;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectAccom;
@@ -26,6 +16,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+
+import com.vima.gateway.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,6 +36,10 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/accommodation")
 @RequiredArgsConstructor
 public class AccommodationController {
+
+    private final AuthenticationService authenticationService;
+    @Value("${channel.address.accommodation-ms}")
+    private String channelAddress;
 
     @PostMapping(value = "/")
     public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
@@ -116,8 +113,15 @@ public class AccommodationController {
         return  ResponseEntity.ok(AccommodationMapper.convertGrpcToHttpList(result));
     }
 
+    @PostMapping("/filter")
+    public ResponseEntity<List<SearchHttpResponse>> filterAccommodation(@RequestBody @Valid final FilterHttpRequest request){
+        SearchList response = getBlockingStub().getStub().filterAccommodations(AccommodationMapper.convertToFilterRequest(request));
+        getBlockingStub().getChannel().shutdownNow();
+        return ResponseEntity.ok(AccommodationMapper.convertToSearchList(response));
+    }
+
     private gRPCObjectAccom getBlockingStub() {
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9093)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAddress, 9093)
                 .usePlaintext()
                 .build();
         return gRPCObjectAccom.builder()
