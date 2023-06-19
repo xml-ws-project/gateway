@@ -37,11 +37,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AccommodationController {
 
-
     private final AuthenticationService authenticationService;
     @Value("${channel.address.accommodation-ms}")
     private String channelAddress;
-
 
     @PostMapping(value = "/")
     public ResponseEntity<AccommodationHttpResponse> create(@RequestBody @Valid final AccommodationHttpRequest request) {
