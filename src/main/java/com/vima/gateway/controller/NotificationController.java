@@ -4,17 +4,21 @@ import com.vima.gateway.AccommodationServiceGrpc;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectAccom;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectUser;
 import com.vima.gateway.dto.notification.EditNotificationHttpRequest;
+import com.vima.gateway.dto.notification.NotificationHttpResponse;
 import com.vima.gateway.mapper.notification.NotificationMapper;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import communication.UserId;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,13 @@ public class NotificationController {
 	public ResponseEntity<?> editNotificationOptions(@RequestBody @Valid EditNotificationHttpRequest request) {
 		var userBlockingStub = getBlockingStub();
 		var response = userBlockingStub.getStub().editNotificationOptions(NotificationMapper.convertHttpToGrpcEditRequest(request));
+		return ResponseEntity.ok(NotificationMapper.convertGrpcToHttpResponse(response));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<NotificationHttpResponse> get(@PathVariable("id") final Long id) {
+		var userBlockingStub = getBlockingStub();
+		var response = userBlockingStub.getStub().findNotificationOptionsByUserId(UserId.newBuilder().setId(id).build());
 		return ResponseEntity.ok(NotificationMapper.convertGrpcToHttpResponse(response));
 	}
 
