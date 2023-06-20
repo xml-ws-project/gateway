@@ -2,10 +2,7 @@ package com.vima.gateway.mapper.rating;
 
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.converter.LocalDateConverter;
-import com.vima.gateway.dto.rating.EditRatingHttpRequest;
-import com.vima.gateway.dto.rating.HostRatingHttpResponse;
-import com.vima.gateway.dto.rating.RatingHttpRequest;
-import com.vima.gateway.dto.rating.RatingHttpResponse;
+import com.vima.gateway.dto.rating.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,7 +17,6 @@ public class RatingMapper {
                 .setHostId(request.getHostId())
                 .setGuestId(request.getGuestId())
                 .build();
-
         return result;
     }
 
@@ -32,7 +28,6 @@ public class RatingMapper {
                 .guestId(response.getGuestId())
                 .date(LocalDateConverter.convertGoogleTimeStampToLocalDate(response.getDate()))
                 .build();
-
         return  result;
     }
 
@@ -41,7 +36,6 @@ public class RatingMapper {
                 .setId(request.getId())
                 .setNewValue(request.getNewValue())
                 .build();
-
         return result;
     }
 
@@ -54,8 +48,6 @@ public class RatingMapper {
                 .date(LocalDateConverter.convertGoogleTimeStampToLocalDate(grpcResponse.getDate()))
                 .build();
         return result;
-
-
     }
 
     public static List<HostRatingHttpResponse> convertGrpcToHttpList(RatingServiceOuterClass.RatingList grpcResponseList){
@@ -64,6 +56,15 @@ public class RatingMapper {
             httpResponseList.add(convertGrpcToHttpForHost(response));
         });
         return httpResponseList;
+    }
+
+    public static AvgRateHttpResponse convertAvgRateGrpcToHttp(RatingServiceOuterClass.AvgRate response){
+        var result = AvgRateHttpResponse.builder()
+                .avgRate(response.getAvgRate())
+                .firstName(response.getFirstName())
+                .lastName(response.getLastName())
+                .build();
+        return result;
     }
 
 

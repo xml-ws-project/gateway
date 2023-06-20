@@ -1,13 +1,8 @@
 package com.vima.gateway.controller;
 
-import com.vima.gateway.RatingAccommodationServiceGrpc;
-import com.vima.gateway.RatingAccoommodationService;
-import com.vima.gateway.RatingServiceGrpc;
+import com.vima.gateway.*;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRatingAccommodation;
-import com.vima.gateway.dto.rating.EditRatingAccommodationHttpRequest;
-import com.vima.gateway.dto.rating.EditRatingHttpRequest;
-import com.vima.gateway.dto.rating.RatingAccommodationHttpRequest;
-import com.vima.gateway.dto.rating.RatingAccommodationHttpResponse;
+import com.vima.gateway.dto.rating.*;
 import com.vima.gateway.mapper.rating.RatingAccommodationMapper;
 import com.vima.gateway.mapper.rating.RatingMapper;
 import io.grpc.ManagedChannel;
@@ -18,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/rating-accommodation")
@@ -42,6 +38,20 @@ public class RatingAccommodationController {
         var response = getBlockingStub().getStub().edit(RatingAccommodationMapper.convertEditHttpToGrpc(request));
         getBlockingStub().getChannel().shutdown();
         return ResponseEntity.ok(response.getValue());
+    }
+
+    @GetMapping("/all/{id}")
+    public ResponseEntity<List<AccommodationRatingHttpResponse>> findAllByAccommodationId(@PathVariable("id") final String id){
+        var response = getBlockingStub().getStub().findAllByAccommodationId(Uuid.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(RatingAccommodationMapper.convertGrpcToHttpList(response));
+    }
+
+    @GetMapping("avg/{id}")
+    public ResponseEntity<AvgAccommodationRateHttpResponse> findAccommodationAvgRate(@PathVariable("id") final String id){
+        var response = getBlockingStub().getStub().findAvgAccommodationRate(Uuid.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(RatingAccommodationMapper.convertAvgAccommodationRateGrpcToHttp(response));
     }
 
     private gRPCObjectRatingAccommodation getBlockingStub(){

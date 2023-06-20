@@ -3,12 +3,12 @@ package com.vima.gateway.mapper.rating;
 import com.vima.gateway.RatingAccoommodationService;
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.converter.LocalDateConverter;
-import com.vima.gateway.dto.rating.EditRatingAccommodationHttpRequest;
-import com.vima.gateway.dto.rating.RatingAccommodationHttpRequest;
-import com.vima.gateway.dto.rating.RatingAccommodationHttpResponse;
+import com.vima.gateway.dto.rating.*;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -38,6 +38,32 @@ public class RatingAccommodationMapper {
         var result = RatingAccoommodationService.EditRatingAccommodationRequest.newBuilder()
                 .setId(request.getId())
                 .setNewValue(request.getNewValue())
+                .build();
+        return result;
+    }
+    public static AccommodationRatingHttpResponse convertGrpcToHttpForAccommodation(RatingAccoommodationService.RatingByAccommodationId grpcResponse){
+        var result = AccommodationRatingHttpResponse.builder()
+                .id(grpcResponse.getId())
+                .value(grpcResponse.getValue())
+                .username(grpcResponse.getUsername())
+                .guestId(grpcResponse.getGuestId())
+                .date(LocalDateConverter.convertGoogleTimeStampToLocalDate(grpcResponse.getDate()))
+                .build();
+        return result;
+    }
+
+    public static List<AccommodationRatingHttpResponse> convertGrpcToHttpList(RatingAccoommodationService.RatingAccommodationList grpcResponseList){
+        List<AccommodationRatingHttpResponse> httpResponseList = new ArrayList<>();
+        grpcResponseList.getResponseList().forEach(response ->{
+            httpResponseList.add(convertGrpcToHttpForAccommodation(response));
+        });
+        return httpResponseList;
+    }
+
+    public static AvgAccommodationRateHttpResponse convertAvgAccommodationRateGrpcToHttp(RatingAccoommodationService.AvgAccommorationRate response){
+        var result = AvgAccommodationRateHttpResponse.builder()
+                .avgRate(response.getAvgRate())
+                .name(response.getName())
                 .build();
         return result;
     }

@@ -27,8 +27,27 @@ message EditRatingAccommodationRequest{
   int32 newValue = 2;
 }
 
+message RatingByAccommodationId{
+  uint64 id = 1;
+  int32 value = 2;
+  string username = 3;
+  uint64 guestId = 4;
+  google.protobuf.Timestamp date = 5;
+}
+
+message RatingAccommodationList{
+  repeated RatingByAccommodationId response = 1;
+}
+message AvgAccommorationRate{
+  double avgRate = 1;
+  string name = 2;
+
+}
+
 service RatingAccommodationService{
   rpc create(RatingAccommodationRequest) returns (RatingAccommodationResponse);
   rpc delete(ID) returns (TextMessage);
   rpc edit(EditRatingAccommodationRequest) returns (TextMessage);
+  rpc findAllByAccommodationId(Uuid) returns (RatingAccommodationList);
+  rpc findAvgAccommodationRate(Uuid) returns (AvgAccommorationRate);
 }

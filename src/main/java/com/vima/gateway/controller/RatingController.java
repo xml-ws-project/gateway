@@ -4,10 +4,7 @@ import com.vima.gateway.RatingServiceGrpc;
 import com.vima.gateway.RatingServiceOuterClass;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRating;
 import com.vima.gateway.dto.grpcObjects.gRPCObjectRes;
-import com.vima.gateway.dto.rating.EditRatingHttpRequest;
-import com.vima.gateway.dto.rating.HostRatingHttpResponse;
-import com.vima.gateway.dto.rating.RatingHttpRequest;
-import com.vima.gateway.dto.rating.RatingHttpResponse;
+import com.vima.gateway.dto.rating.*;
 import com.vima.gateway.mapper.rating.RatingMapper;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -49,6 +46,13 @@ public class RatingController {
        var response  =getBlockingStub().getStub().findAllByHostId(RatingServiceOuterClass.LONG.newBuilder().setValue(id).build());
        getBlockingStub().getChannel().shutdown();
        return  ResponseEntity.ok(RatingMapper.convertGrpcToHttpList(response));
+    }
+
+    @GetMapping("avg/{id}")
+    public ResponseEntity<AvgRateHttpResponse> findAvgRate(@PathVariable("id") final Long id){
+        var response = getBlockingStub().getStub().findAvgRate(RatingServiceOuterClass.LONG.newBuilder().setValue(id).build());
+        getBlockingStub().getChannel().shutdown();
+        return ResponseEntity.ok(RatingMapper.convertAvgRateGrpcToHttp(response));
     }
 
     private gRPCObjectRating getBlockingStub(){
