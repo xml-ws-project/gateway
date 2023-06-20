@@ -77,7 +77,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/{email}")
-    public String getHostId(@PathVariable("email") String email){
-        return authenticationService.getByEmail(email);
+    public ResponseEntity<String> getHostId(@PathVariable("email") String email){
+        return ResponseEntity.ok(authenticationService.getByEmail(email));
     }
 }

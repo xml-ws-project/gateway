@@ -160,7 +160,7 @@ public class AuthenticationService implements UserDetailsService {
     }
 
     public String getByEmail(String email){
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9092)
+        ManagedChannel channel = ManagedChannelBuilder.forAddress(channelAuthAddress, 9092)
                 .usePlaintext()
                 .build();
         userDetailsServiceGrpc.userDetailsServiceBlockingStub blockingStub = userDetailsServiceGrpc.newBlockingStub(channel);
